@@ -21,7 +21,7 @@
                     </Row>
                 </Checkbox.Group>
             </Form.Item>
-             <Form.Item name="profile" label="机构介绍" >
+             <Form.Item name="profile" label="机构介绍"  :rules="rules.profile">
                 <Input.TextArea type="text" v-model:value="formState.profile" placeholder="最多200个字"></Input.TextArea>
             </Form.Item>
         </Form>
@@ -46,11 +46,14 @@ const formState = reactive({
 const rules = {
     company:[
         { required: true, message: '不能为空!' },
-        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{1,20}$/, message: '不能超过二十个字符!' }
+        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{1,20}$/, message: '不能超过20个字符!' }
     ],
     platform:[
         { required: true, message: '不能为空!' }
     ],
+    profile:[
+        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{0,200}$/, message: '不能超过200个字符!' }
+    ]
 }
 
 const state = reactive({

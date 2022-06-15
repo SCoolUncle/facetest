@@ -13,6 +13,7 @@ import StepForm from './views/info-sub/index.vue'
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
   /* text-align: center; */
   color: #2c3e50;
 }

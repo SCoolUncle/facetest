@@ -12,14 +12,14 @@
         </Steps>
     </div>
     <div class="page-content">
-        <Step1></Step1>
-        <Step2></Step2>
-        <Step3></Step3>
+        <Step1 v-show="state.stepIndex === 0" ></Step1>
+        <Step2 v-show="state.stepIndex === 1" ></Step2>
+        <Step3 v-show="state.stepIndex === 2" ></Step3>
     </div>
     <div class="page-bottom">
         <Button type="primary" @click="handleNext">下一步</Button>
-        <Button type="primary">提交</Button>
-        <Button >上一步</Button>
+        <Button type="primary" v-show="state.stepIndex === 2">提交</Button>
+        <Button @click="handleUp">上一步</Button>
     </div>
     </div>
 </template>
@@ -30,12 +30,25 @@ import Step1 from './components/step-1.vue'
 import Step2 from './components/step-2.vue'
 import Step3 from './components/step-3.vue'
 
-const state = reactive({
-    stepIndex:0
+interface stateType{
+    stepIndex:number,
+    formData:{}
+}
+
+const state = reactive<stateType>({
+    stepIndex:0,
+    formData:{
+
+    }
 })
 
 function handleNext(){
+    state.stepIndex++
+    
+}
 
+function handleUp(){
+    state.stepIndex--
 }
 
 
