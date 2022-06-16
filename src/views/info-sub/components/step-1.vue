@@ -3,6 +3,7 @@
         <Form
             :model="formState"
             v-bind="layout"
+            ref="form"
         >
             <Form.Item name="company" label="机构名称" :rules="rules.company">
                 <Input v-model:value="formState.company" placeholder="最多20个字"></Input>
@@ -28,13 +29,11 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { reactive, ref, defineExpose} from 'vue';
 import {Form, Input, Select, Checkbox, Row, Col} from 'ant-design-vue';
+import useForm from './common';
 
-const layout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 20 },
-};
+const {layout, rules} = useForm()
 
 const formState = reactive({
     company:'',
@@ -43,18 +42,7 @@ const formState = reactive({
     profile:''
 })
 
-const rules = {
-    company:[
-        { required: true, message: '不能为空!' },
-        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{1,20}$/, message: '不能超过20个字符!' }
-    ],
-    platform:[
-        { required: true, message: '不能为空!' }
-    ],
-    profile:[
-        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{0,200}$/, message: '不能超过200个字符!' }
-    ]
-}
+const form = ref()
 
 const state = reactive({
     platformList:[
@@ -81,6 +69,19 @@ const state = reactive({
             value:2
         }
     ]
+})
+
+async function handleValidate(){
+    let res = await form.value.validateFields().then(res => {
+        console.log(res)
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+defineExpose({
+    formState,
+    handleValidate
 })
 
 </script>

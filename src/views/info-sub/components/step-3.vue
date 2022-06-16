@@ -1,51 +1,44 @@
 <template >
-    <div class="setep3-form">
+    <div class="step3-form">
         <Form
+            ref="form"
             :model="formState"
             v-bind="layout"
         >
-            <Form.Item name="name" label="姓名" :rules="rules.name">
-                <Input v-model:value="formState.company" placeholder="最多10个字"></Input>
+            <Form.Item name="name" :colon="false" label="姓名" :rules="rules.name">
+                <Input v-model:value="formState.name" placeholder="最多10个字"></Input>
             </Form.Item>
-            <Form.Item name="id" label="身份证" :rules="rules.id">
-                <Input v-model:value="formState.company" placeholder="11位字符"></Input>
+            <Form.Item name="id" :colon="false" label="身份证" :rules="rules.id">
+                <Input v-model:value="formState.id" placeholder="11位字符"></Input>
             </Form.Item>
-            <Form.Item name="id" label="联系方式" :rules="rules.phone">
-                <Input v-model:value="formState.company" placeholder=""></Input>
-            </Form.Item>
+            <Row>
+                <Col :span="4" class="step3-form-phone">联系方式</Col>
+                <Col :span="20" class="step3-form-input">
+                    <Input v-model:value="state.phone.head" placeholder="" style="width:100px"></Input>
+                    <span style="padding:0px 10px">——</span>
+                    <Input v-model:value="state.phone.body" placeholder="" ></Input>
+                </Col>
+            </Row>
         </Form>
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from 'vue';
-import {Form, Input, Select, Checkbox, Row, Col} from 'ant-design-vue';
+import { reactive , watch, ref, defineExpose} from 'vue';
+import {Form, Input, Row, Col} from 'ant-design-vue';
+import useForm from './common';
 
-const layout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 20 },
-};
-
+const {layout, rules} = useForm()
+const form = ref(null)
 const formState = reactive({
-    company:'',
-    platform:'',
-    ability:[],
-    profile:''
+    name:'',
+    id:'',
+    phone:''
 })
-
-const rules = {
-    name:[
-        { required: true, message: '不能为空!' },
-        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{1,20}$/, message: '不能超过20个字符!' }
-    ],
-    id:[
-        { required: true, message: '不能为空!' }
-    ],
-    phone:[
-        {pattern:/^[a-zA-Z\d\u4E00-\u9FA5]{0,200}$/, message: '不能超过200个字符!' }
-    ]
-}
-
 const state = reactive({
+    phone:{
+        head: '',
+        body:''
+    } ,
     platformList:[
         {
             label:'抖音',
@@ -72,7 +65,42 @@ const state = reactive({
     ]
 })
 
+watch(() => state.phone,(data) => {
+    formState.phone = data.head + '-' + data.body
+    console.log(formState.phone)
+},{deep:true},)
+
+async function handleValidate(){
+    let res = await form.value.validateFields().then(res => {
+        console.log(res)
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+defineExpose({
+    formState,
+    handleValidate
+})
+
 </script>
-<style >
-    
+<style lang="less" scoped>
+    .step3-form{
+        &-phone{
+            text-align: right;
+            padding:0px 10px;
+        }
+        &-phone::before{
+            display: inline-block;
+            margin-right: 4px;
+            color: #ff4d4f;
+            font-size: 14px;
+            font-family: SimSun, sans-serif;
+            line-height: 1;
+            content: '*';
+        }
+        &-input{
+            display: flex;
+        }
+    }
 </style>

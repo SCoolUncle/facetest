@@ -1,10 +1,11 @@
 <template >
-    <div class="setep2-form">
+    <div class="step2-form">
         <Form
+            ref="form"
             :model="formState"
             v-bind="layout"
         >
-            <Form.Item name="photo" label="营业执照" :rules="rules.photo">
+            <Form.Item name="photo" label="营业执照" >
                 <Upload
                     v-model:file-list="fileList"
                     list-type="picture-card"
@@ -32,30 +33,20 @@
     </div>
 </template>
 <script lang="ts" setup>
-    import { reactive ,ref} from 'vue';
+    import { reactive ,ref, defineExpose} from 'vue';
     import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
     import {Form, Upload, Input, message, Modal} from 'ant-design-vue';
     import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
+    import useForm from './common';
 
-    const rules = {
-        cardNumber:[
-            { required: true, message: '不能为空!' },
-            {pattern:/[\w{2}]/,message:'请输入15位或者18位证件号码'}
-        ]
-    }
-    const layout = {
-        labelCol: { span: 4 },
-        wrapperCol: { span: 20 },
-    };
-
+    const form = ref(null)
+    const {layout, rules} = useForm()
     const formState = reactive({
         photo:'',
         cardNumber:''
     })
-
     const fileList = ref([]);
     const loading = ref<boolean>(false);
-    const imageUrl = ref<string>('');
     const previewVisible = ref(false);
     const previewImage = ref('');
     const previewTitle = ref('');
@@ -78,8 +69,8 @@
       return isJpgOrPng ;
     };
 
+    // photo 临时使用base64作为url
     const handleChange = async (info: UploadChangeParam) => {
-      console.log(info.file.status)
       if (info.file.status === 'uploading') {
         loading.value = true;
         return;
@@ -88,7 +79,6 @@
         loading.value = false;
         return;
       }
-      // 临时error状态
       if (info.file.status === 'error') {
         formState.photo = (await getBase64(info.file.originFileObj)) as string;
         console.log(formState)
@@ -109,10 +99,42 @@
       previewTitle.value = '';
     };
 
-    
+    async function handleValidate(){
+        let res = await form.value.validateFields().then(res => {
+            console.log(res)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
 
+    defineExpose({
+        formState,
+        handleValidate
+    })
 </script>
 <style lang="less" scoped>
+.step2-form{
+    .avatar-uploader::after{
+        display:block;
+        position: absolute;
+        color:#999;
+        letter-spacing: 2px;
+        font-size: 12px;
+        content:'只支持.jpg格式'
+    }
+    .avatar-uploader::before{
+        position: absolute;
+        top:8px;
+        left:-80px;
+        display: inline-block;
+        margin-right: 4px;
+        color: #ff4d4f;
+        font-size: 14px;
+        font-family: SimSun, sans-serif;
+        line-height: 1;
+        content: '*';
+    }
+}
 .avatar-uploader > .ant-upload {
   width: 128px;
   height: 128px;
